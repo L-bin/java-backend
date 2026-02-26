@@ -10,7 +10,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -46,7 +45,7 @@ public class UserController {
         User user = new User();
         user.setName(userRequest.getName());
         user.setEmail(userRequest.getEmail());
-        user.setRole(user.getRole());
+        user.setRole(userRequest.getRole());
         user = dataStore.saveUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }

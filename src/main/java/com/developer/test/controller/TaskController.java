@@ -23,7 +23,7 @@ public class TaskController {
     private static final List<String> VALID_STATUSES = Arrays.asList("pending", "in-progress", "completed");
 
     private final DataStore dataStore;
-    
+
     public TaskController(DataStore dataStore) {
         this.dataStore = dataStore;
     }
@@ -38,10 +38,10 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@Valid @RequestBody TaskRequest taskRequest){
+    public ResponseEntity<?> createTask(@Valid @RequestBody TaskRequest taskRequest){
         User user = dataStore.getUserById(taskRequest.getUserId());
         if (user == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found with the User ID.");
         }
         Task task = new Task();
         task.setTitle(taskRequest.getTitle());
@@ -52,24 +52,24 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable int id,@RequestBody UpdateTaskRequest taskRequest){
+    public ResponseEntity<?> updateTask(@PathVariable int id,@RequestBody UpdateTaskRequest taskRequest){
         Task task = dataStore.getTaskById(id);
         if (task == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found with the specified ID.");
         }
         if (!StringUtils.isEmpty(taskRequest.getTitle())){
             task.setTitle(taskRequest.getTitle());
         }
         if (!StringUtils.isEmpty(taskRequest.getStatus())){
             if (!VALID_STATUSES.contains(taskRequest.getStatus())){
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.badRequest().body("Status must one of: \"pending\", \"in-progress\", \"completed\"");
             }
             task.setStatus(taskRequest.getStatus());
         }
         if (taskRequest.getUserId()!=null){
             User user = dataStore.getUserById(taskRequest.getUserId());
             if (user == null) {
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.badRequest().body("User ID is invalid, user does not exist.");
             }
             task.setUserId(taskRequest.getUserId());
         }

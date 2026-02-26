@@ -6,16 +6,16 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 public class UserRequest {
-    @NotBlank
+    @NotBlank(message = "Name cannot be blank.")
     @JsonProperty("name")
     private String name;
 
-    @NotBlank
-    @Email
+    @NotBlank(message = "Email cannot be blank.")
+    @Email(message = "Email format is invalid.")
     @JsonProperty("email")
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "Role cannot be blank.")
     @JsonProperty("role")
     private String role;
 

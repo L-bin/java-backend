@@ -2,30 +2,29 @@ package com.developer.test.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 public class TaskRequest {
 
-    @NotNull
+    @NotBlank(message = "Title cannot be blank.")
     @JsonProperty("title")
     private String title;
 
     @Pattern(regexp = "pending|in-progress|completed",
-            message = "status must one of: \"pending\", \"in-progress\", \"completed\"")
+            message = "Status must one of: \"pending\", \"in-progress\", \"completed\"")
     @JsonProperty("status")
     private String status;
 
-    @NotNull
+    @NotNull(message = "UserId cannot be null.")
     @JsonProperty("userId")
-    private int userId;
+    private Integer userId;
 
     public TaskRequest() {
     }
 
-    public TaskRequest(String title, String status, int userId) {
+    public TaskRequest(String title, String status, Integer userId) {
         this.title = title;
         this.status = status;
         this.userId = userId;
@@ -51,7 +50,7 @@ public class TaskRequest {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 }

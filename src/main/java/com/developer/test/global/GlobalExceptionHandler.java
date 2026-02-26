@@ -1,34 +1,32 @@
 package com.developer.test.global;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.ui.Model;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleArgumentException(MethodArgumentNotValidException ex) {
+        BindingResult bindingResult = ex.getBindingResult();
+        List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+
+        StringBuilder errorMessage = new StringBuilder();
+        for (FieldError fieldError : fieldErrors) {
+            errorMessage.append(fieldError.getDefaultMessage()).append("\n");
+        }
+
+        return ResponseEntity.badRequest().body(errorMessage.toString().trim());
+    }
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String handleException(Exception ex, HttpServletRequest request, Model model) {
-        logDetailedError(request, HttpStatus.INTERNAL_SERVER_ERROR, ex);
-        model.addAttribute("error", "Internal Server Error");
-        return "error/500";
-    }
-
-    private void logDetailedError(HttpServletRequest request, HttpStatus status, Exception ex) {
-        String method = request.getMethod();
-        String path = request.getRequestURI();
-        logger.error("HTTP Method: {}, Request Path: {}, Response Status: {}, Error: {}",
-                method, path, status.value(), ex.getMessage());
+    public ResponseEntity<String> handleException(Exception ex) {
+        return ResponseEntity.internalServerError().body(ex.getMessage());
     }
 }
-
-
