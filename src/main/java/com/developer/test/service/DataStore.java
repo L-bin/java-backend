@@ -55,8 +55,12 @@ public class DataStore {
     }
 
     public Task updateTask(Task task) {
-        tasks.putIfAbsent(task.getId(), task);
-        return task;
+        if (tasks.containsKey(task.getId())){
+            tasks.put(task.getId(), task);
+            return task;
+        } else {
+            return null;
+        }
     }
 
     public Task getTaskById(int id) {
